@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday biann! 🐾🎂 - PAW Patrol HQ</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #0284c7 0%, #1d4ed8 50%, #1e3a8a 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #1e293b;
+    }
+    
+    .font-paw {
+      font-family: 'Fredoka', cursive;
+    }
+
+    /* Pattern Paw Print Overlay */
+    .paw-bg-pattern {
+      background-image: radial-gradient(#ffffff 12%, transparent 12%), radial-gradient(#ffffff 12%, transparent 12%);
+      background-size: 50px 50px;
+      background-position: 0 0, 25px 25px;
+      opacity: 0.08;
+    }
+
+    /* Custom Glassmorphism PAW Card */
+    .paw-card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.3), 0 10px 15px -5px rgba(0, 0, 0, 0.1);
+      border: 5px solid #facc15;
+    }
+
+    /* Buttons */
+    .btn-paw {
+      background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      font-family: 'Fredoka', cursive;
+      letter-spacing: 0.5px;
+      border-bottom: 4px solid #991b1b;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-paw:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
+      background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+    }
+
+    .btn-paw:active {
+      transform: translateY(2px);
+      border-bottom-width: 0px;
+    }
+
+    /* Badge Polygon */
+    .paw-badge {
+      clip-path: polygon(50% 0%, 100% 20%, 100% 80%, 50% 100%, 0% 80%, 0% 20%);
+    }
+
+    /* Pulse Glow for Calendar Star */
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 15px #facc15; }
+      50% { transform: scale(1.15); box-shadow: 0 0 30px #eab308; }
+    }
+
+    .star-highlight {
+      animation: pulseGlow 1.5s infinite ease-in-out;
+    }
+
+    /* Slide Transition Animation */
+    .slide-enter {
+      animation: fadeInSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInSlide {
+      from { opacity: 0; transform: translateY(25px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Advanced Hardcore TTS Grid Styles */
+    .tts-grid {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 3px;
+      background-color: #3b82f6;
+      padding: 6px;
+      border-radius: 12px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .tts-cell-wrapper {
+      position: relative;
+      aspect-ratio: 1 / 1;
+    }
+
+    .tts-input {
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: #1e3a8a;
+      transition: all 0.2s ease;
+      font-family: 'Fredoka', sans-serif;
+      padding: 0;
+    }
+
+    @media (min-width: 640px) {
+      .tts-input {
+        font-size: 1.1rem;
+      }
+    }
+
+    .tts-input:focus {
+      outline: none;
+      border-color: #facc15;
+      background-color: #fef08a;
+      z-index: 10;
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.5);
+    }
+
+    .tts-input.correct {
+      background-color: #86efac !important;
+      color: #14532d !important;
+      border-color: #22c55e !important;
+    }
+
+    .tts-input.incorrect {
+      background-color: #fca5a5 !important;
+      color: #7f1d1d !important;
+      border-color: #ef4444 !important;
+    }
+
+    .tts-block {
+      background-color: #1e3a8a;
+      border-radius: 6px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tts-number {
+      position: absolute;
+      top: 1px;
+      left: 3px;
+      font-size: 0.55rem;
+      font-weight: 800;
+      color: #1e40af;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Custom Scrollbar for Longtext */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #3b82f6;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body class="relative flex items-center justify-center min-h-screen p-3 sm:p-6">
+
+  <!-- Paw Pattern Overlay -->
+  <div class="fixed inset-0 paw-bg-pattern pointer-events-none z-0"></div>
+
+  <!-- Audio Controls Floating Button -->
+  <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+    <div id="audioStatus" class="hidden sm:block text-xs font-bold text-white bg-blue-900/80 backdrop-blur px-3 py-1.5 rounded-full shadow border border-yellow-400">
+      <i class="fas fa-volume-high text-yellow-300 mr-1"></i> PAW Patrol Theme
+    </div>
+    <button id="bgmToggle" onclick="toggleMusic()" class="bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold p-3 sm:p-3.5 rounded-full shadow-xl flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 border-2 border-white">
+      <i class="fas fa-music text-xl" id="musicIcon"></i>
+    </button>
+  </div>
+
+  <!-- Main Container -->
+  <main class="w-full max-w-xl z-10 my-auto">
+
+    <!-- ================= SLIDE 1: PIN ACCESS (0701) ================= -->
+    <div id="slide1" class="paw-card rounded-3xl p-6 sm:p-8 text-center slide-enter">
+      <!-- Shield Badge Icon -->
+      <div class="relative w-20 h-24 mx-auto mb-4 bg-gradient-to-b from-red-500 to-red-700 paw-badge flex items-center justify-center shadow-lg border-4 border-yellow-400">
+        <i class="fas fa-paw text-4xl text-yellow-300 drop-shadow"></i>
+      </div>
+      
+      <h1 class="text-3xl sm:text-4xl font-paw text-blue-900 mb-1 tracking-wide">PAW PATROL HQ</h1>
+      <p class="text-gray-600 text-xs sm:text-sm font-semibold mb-6">Sistem Keamanan Lookout Tower: Masukkan PIN Rahasia!</p>
+
+      <!-- Input PIN -->
+      <div class="mb-6">
+        <label class="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-wider">PIN RAHASIA (4 DIGIT)</label>
+        <div class="flex justify-center space-x-2 sm:space-x-3" id="pinInputs">
+          <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-digit w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:outline-none bg-blue-50 text-blue-900 shadow-inner" autofocus>
+          <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-digit w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:outline-none bg-blue-50 text-blue-900 shadow-inner">
+          <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-digit w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:outline-none bg-blue-50 text-blue-900 shadow-inner">
+          <input type="password" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-digit w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:outline-none bg-blue-50 text-blue-900 shadow-inner">
+        </div>
+        <p id="pinError" class="text-red-500 font-bold text-xs mt-3 hidden animate-bounce">
+          <i class="fas fa-triangle-exclamation mr-1"></i> Aduh PIN nya salah! (Hint: Tanggal Ulang Tahun tapi bisa jadi ga sama banget)
+        </p>
+      </div>
+
+      <button onclick="verifyPin()" class="btn-paw w-full py-3.5 rounded-2xl text-lg sm:text-xl shadow-lg flex items-center justify-center gap-2">
+        <span>Buka Akses HQ</span> <i class="fas fa-key text-yellow-300"></i>
+      </button>
+    </div>
+
+    <!-- ================= SLIDE 2: NICKNAME VERIFICATION ================= -->
+    <div id="slide2" class="paw-card rounded-3xl p-6 sm:p-8 text-center hidden">
+      <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center border-4 border-yellow-400 text-yellow-300 text-3xl shadow-lg">
+        <i class="fas fa-dog"></i>
+      </div>
+      
+      <h2 class="text-2xl sm:text-3xl font-paw text-blue-900 mb-2">Verifikasi Anggota Patroli</h2>
+      <p class="text-gray-600 text-xs sm:text-sm font-semibold mb-6"> ayooo masukin nama panggilann akhir-akhir ini buat Konfirmasi identitas pahlawan hari ini!(singkat yah dan agak panjang wkwwk)</p>
+
+      <div class="mb-6 text-left">
+        <label for="nicknameInput" class="block text-gray-700 font-bold mb-2 text-xs uppercase tracking-wider">Nama Panggilan / Kata Kunci:</label>
+        <div class="relative">
+          <input type="text" id="nicknameInput" placeholder="Ketik nama panggilan..." class="w-full px-4 py-3.5 rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:outline-none bg-blue-50 font-bold text-blue-900 text-base shadow-inner pl-11">
+          <i class="fas fa-user-shield absolute left-4 top-4 text-blue-400 text-lg"></i>
+        </div>
+        <p id="nicknameError" class="text-red-500 font-bold text-xs mt-2 hidden animate-pulse">
+          <i class="fas fa-times-circle mr-1"></i> Ups, nama ditolakk, cobaa lagii ya(semangatt wkwkw)! (Hint: nama panggilan dari aku tapii yg duluu, ingett gaa wkwkw)
+        </p>
+      </div>
+
+      <button onclick="verifyNickname()" class="btn-paw w-full py-3.5 rounded-2xl text-lg sm:text-xl shadow-lg flex items-center justify-center gap-2">
+        <span>Konfirmasi Identitas</span> <i class="fas fa-shield-dog text-yellow-300"></i>
+      </button>
+    </div>
+
+    <!-- ================= SLIDE 3: OCTOBER CALENDAR HIGHLIGHT ================= -->
+    <div id="slide3" class="paw-card rounded-3xl p-6 sm:p-8 text-center hidden">
+      <div class="flex items-center justify-between border-b-2 border-yellow-400 pb-3 mb-4">
+        <span class="font-paw text-2xl text-red-600 flex items-center gap-2">
+          <i class="fas fa-calendar-star text-yellow-500"></i> OKTOBER
+        </span>
+        <span class="text-xs bg-yellow-400 text-blue-900 font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+          Special Month 🎉
+        </span>
+      </div>
+
+      <!-- October Calendar Grid -->
+      <div class="grid grid-cols-7 gap-1.5 text-center font-bold text-xs sm:text-sm mb-5 text-gray-700">
+        <div class="text-red-500 py-1 font-paw">Min</div>
+        <div class="py-1 font-paw">Sen</div>
+        <div class="py-1 font-paw">Sel</div>
+        <div class="py-1 font-paw">Rab</div>
+        <div class="py-1 font-paw">Kam</div>
+        <div class="py-1 font-paw">Jum</div>
+        <div class="py-1 font-paw">Sab</div>
+
+        <!-- Offset days -->
+        <div class="py-2 text-gray-300">29</div>
+        <div class="py-2 text-gray-300">30</div>
+        <div class="py-2">1</div>
+        <div class="py-2">2</div>
+        <div class="py-2">3</div>
+        <div class="py-2">4</div>
+        <div class="py-2">5</div>
+        <div class="py-2">6</div>
+        
+        <!-- TANGGAL 7 OKTOBER HIGHLIGHTED -->
+        <div onclick="triggerCalendarConfetti()" class="relative py-2 text-white font-black bg-gradient-to-r from-red-500 to-red-600 rounded-full star-highlight cursor-pointer flex items-center justify-center shadow-lg transform hover:scale-110 transition">
+          7
+          <i class="fas fa-crown text-yellow-300 text-xs absolute -top-2.5 right-0 animate-bounce"></i>
+        </div>
+
+        <div class="py-2">8</div>
+        <div class="py-2">9</div>
+        <div class="py-2">10</div>
+        <div class="py-2">11</div>
+        <div class="py-2">12</div>
+        <div class="py-2">13</div>
+        <div class="py-2">14</div>
+        <div class="py-2">15</div>
+        <div class="py-2">16</div>
+        <div class="py-2">17</div>
+        <div class="py-2">18</div>
+        <div class="py-2">19</div>
+        <div class="py-2">20</div>
+        <div class="py-2">21</div>
+        <div class="py-2">22</div>
+        <div class="py-2">23</div>
+        <div class="py-2">24</div>
+        <div class="py-2">25</div>
+        <div class="py-2">26</div>
+        <div class="py-2">27</div>
+        <div class="py-2">28</div>
+        <div class="py-2">29</div>
+        <div class="py-2">30</div>
+        <div class="py-2">31</div>
+      </div>
+
+      <!-- Adjustable Header Text -->
+      <div class="bg-blue-50/90 border-2 border-blue-200 p-4 rounded-2xl text-left mb-6 shadow-sm">
+        <p class="text-xs sm:text-sm font-semibold text-blue-950 leading-relaxed">
+          <i class="fas fa-quote-left text-yellow-500 text-base mr-1"></i>
+          Duhh apaa yaa inii?? kokk dilingkarin sendirian sih , naaa kenapaa tuh dilingkar adaa apasii ituu 🐾🎂 Hari paling spesial buat seluruh anggota PAW Patrol & seluruh dunia! Klik angka 7 buat rayain! 🥳✨
+        </p>
+      </div>
+
+      <button onclick="nextSlide(4)" class="btn-paw w-full py-3.5 rounded-2xl text-lg sm:text-xl shadow-lg flex items-center justify-center gap-2">
+        <span>Baca Surat Ulang Tahun</span> <i class="fas fa-arrow-right text-yellow-300"></i>
+      </button>
+    </div>
+
+    <!-- ================= SLIDE 4: LONGTEXT / SURAT UCAPAN ================= -->
+    <div id="slide4" class="paw-card rounded-3xl p-6 sm:p-8 hidden">
+      <div class="text-center mb-4">
+        <div class="inline-flex p-3.5 bg-yellow-400 rounded-2xl text-blue-900 text-3xl mb-2 shadow-md border-2 border-white">
+          <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-paw text-blue-900">Happy Birthday biann!</h2>
+        <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Surat Dari jasminee hehe 💌</span>
+      </div>
+
+      <!-- Longtext Content Area -->
+      <div class="bg-blue-50/90 border-2 border-blue-200 p-5 rounded-2xl max-h-72 overflow-y-auto text-gray-800 leading-relaxed text-xs sm:text-sm space-y-3 mb-6 shadow-inner custom-scroll">
+        <p class="font-bold text-blue-900 text-sm sm:text-base">Hayyie biann my broo 🐾🎈</p>
+        <p> biann ehh dede hehehe😆 make a wish for you birthday yahh, sekarang kamuu dah bertambah umurr nyaa(walaupun ya sebenarnya berkurangg....),
+        <p> semogaa di tahun ini di kelilingi kebahagiaan yang pasti, sehatt teruss badan nyaa, semogaa ujiann yg bakal kamuu jalaninn nantii di permudahh 
+        <p> teruss pas PKL jugaa orang orang nyaa tak rese teruss malah baik baik, ramahh, dann lingkungan nyaa bikin nyamann gaa ada yg rese ato mempersulit 
+        <p> dehh biarr betahh kamu nyaa, teruss yaa dapetinn nilaii pkl yang memuaskann dan pas nyusun laporan nyaa tak banyak revisii, teruss tka, 
+        <p> snbp(kaloo kamuu  masuk eligibel), terus utbk, DAN kaloo ngendarain motorr ingett kecepatan jangann tinggi tinggi 😒😒, 
+        <p> teruss seringg ceritaa ceritaaa semisal adaa yg ganggu pikirann, biarr takk kepenuhan ituu pala muu naa berasap nantii
+        <p> (BECANDA YAA, TAPII SERIUSS) teruss jangann lupaaa kamu kalo mainn ingett kabarinn ibu muu naa biarr tak khawatirrr tuu, 
+        <p> dahh sisa nya doaa sendiri dah gede kan yakk dah tambah tua tuhh kamuu WKWKWK 
+
+        <p>ingett moto Paw Patrol "No job is too big, no pup is too small!". jadiii semogaa kamuu bisaa tumbuh jadii orang yang pemberani 
+        <p>dan siapp beraksi kayakk Paw Patrol tuuu. 🎉🐶✨</p>
+        <p class="font-bold text-right text-blue-900 pt-2 border-t border-blue-200">— Dengan Penuh Kasih Sayang ❤</p>
+      </div>
+
+      <button onclick="nextSlide(5)" class="btn-paw w-full py-3.5 rounded-2xl text-lg sm:text-xl shadow-lg flex items-center justify-center gap-2">
+        <span>Mulai Tantangan Hardcore TTS</span> <i class="fas fa-gamepad text-yellow-300"></i>
+      </button>
+    </div>
+
+    <!-- ================= SLIDE 5: HARDCORE PAW PATROL TTS (10x10) ================= -->
+    <div id="slide5" class="paw-card rounded-3xl p-4 sm:p-7 text-center hidden">selamat ulang tahun yang ke-spesial! Semoga di usiamu yang baru ini, kamu selalu dikelilingi kebahagiaan, kesehatan yang melimpah, keberkahan, dan dicapai semua impian besarmu!</p>
+        <p>Sama persis seperti moto tim PAW Patrol: <i>"No job is too big, no pup is too small!"</i>, kamu juga harus selalu yakin dan percaya sama kemampuan dirimu sendiri ya! Kamu itu sosok yang hebat, tangguh, dan selalu bisa bikin suasana jadi lebih ceria.</p>
+        <p>Terima kasih ya sudah hadir dan jadi orang yang sangat berarti. Semogea hari ini penuh dengan kejutan manis, senyuman tulus, dan hadiah-hadiah terbaik dari orang tersayang!</p>
+        <p>Tetaplah jadi Dde Biann yang baik hati, c
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-yellow-300 text-xl shadow border-2 border-yellow-400">
+            <i class="fas fa-puzzle-piece"></i>
+          </div>
+          <div class="text-left">
+            <h2 class="text-xl sm:text-2xl font-paw text-blue-900 leading-tight">Hardcore TTS PAW Patrol</h2>
+            <p class="text-[10px] sm:text-xs font-bold text-gray-500">Khusus Untuk Pecinta Sejati!</p>
+          </div>
+        </div>
+        <button onclick="resetTTS()" class="text-xs bg-gray-200 hover:bg-gray-300 font-bold px-2.5 py-1.5 rounded-lg text-gray-700 transition">
+          <i class="fas fa-rotate-left mr-1"></i> Reset
+        </button>
+      </div>
+
+      <!-- Clues / Petunjuk Soal -->
+      <div class="text-left bg-yellow-50 p-3 rounded-2xl border border-yellow-300 text-[11px] sm:text-xs text-blue-950 mb-3 space-y-1.5 shadow-sm max-h-36 overflow-y-auto custom-scroll">
+        <div class="font-bold text-red-600 border-b border-yellow-200 pb-0.5">
+          <i class="fas fa-arrows-left-right mr-1"></i> MENDATAR (Across):
+        </div>
+        <p><b>1.</b> Anjing Chihuahua anggota PAW Patrol yang tinggal di hutan jungle (7) [Baris 1, Kolom 1]</p>
+        <p><b>3.</b> Sub-tema episode saat pups dapat kekuatan super dari meteor (6) [Baris 3, Kolom 3]</p>
+        <p><b>5.</b> Nama belakang Walikota antagonis dari Foggy Bottom (9) [Baris 7, Kolom 1]</p>
+        <p><b>6.</b> Ayam peliharaan kesayangan Mayor Goodway (11) [Baris 9, Kolom 0]</p>
+
+        <div class="font-bold text-red-600 border-b border-yellow-200 pb-0.5 pt-1">
+          <i class="fas fa-arrows-up-down mr-1"></i> MENURUN (Down):
+        </div>
+        <p><b>2.</b> Anjing Husky ahli penyelamat gunung salju (7) [Baris 1, Kolom 6]</p>
+        <p><b>4.</b> Anjing Dachshund dari PAW Patrol The Movie di Adventure City (7) [Baris 3, Kolom 8]</p>
+        <p><b>7.</b> Anjing pahlawan super favorit Rubble yang ditonton di TV (6) [Baris 5, Kolom 4]</p>
+      </div>
+
+      <!-- 10x10 Interactive Grid -->
+      <div id="ttsGridContainer" class="tts-grid mb-4">
+        <!-- Generated Dynamically by JS -->
+      </div>
+
+      <!-- Live Error / Progress Status -->
+      <p id="ttsStatus" class="text-xs font-bold text-blue-900 mb-3 min-h-[18px]">
+        Isi semua kotak dengan jawaban yang benar!
+      </p>
+
+      <button onclick="checkTTS()" class="btn-paw w-full py-3.5 rounded-2xl text-lg sm:text-xl shadow-lg flex items-center justify-center gap-2">
+        <span>Cek Jawaban TTS</span> <i class="fas fa-check-circle text-yellow-300"></i>
+      </button>
+    </div>
+
+    <!-- ================= SLIDE VICTORY: CELEBRATION ================= -->
+    <div id="slideVictory" class="paw-card rounded-3xl p-6 sm:p-8 text-center hidden">
+      <div class="relative w-24 h-24 mx-auto mb-4 bg-yellow-400 rounded-full flex items-center justify-center text-red-600 text-5xl shadow-2xl border-4 border-white animate-bounce">
+        <i class="fas fa-trophy drop-shadow"></i>
+        <i class="fas fa-star text-yellow-200 text-xl absolute -top-1 -right-1"></i>
+      </div>
+
+      <h2 class="text-3xl sm:text-4xl font-paw text-blue-900 mb-2"> YEYYY MISI HQ SUKSES NII DE! 🎉</h2>
+      <p class="text-gray-700 text-xs sm:text-sm font-semibold mb-6">HEBATT BETT YAA EMANGG ! Kamu berhasil memecahkan semua teka-teki pahlawan PAW Patrol!</p>
+
+      <div class="bg-gradient-to-r from-red-500 to-blue-600 p-0.5 rounded-2xl mb-6 shadow-md">
+        <div class="bg-white p-4 rounded-[14px]">
+        </div>
+      </div>
+
+      <button onclick="triggerConfetti()" class="btn-paw w-full py-3.5 rounded-2xl text-lg sm:text-xl shadow-lg mb-3 flex items-center justify-center gap-2">
+        <span>Lemparkan Konfeti Lagi! 🎊</span>
+      </button>
+
+      <button onclick="location.reload()" class="w-full py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1">
+        <i class="fas fa-rotate-left"></i> Mainkan Dari Awal
+      </button>
+    </div>
+
+  </main>
+
+  <script>
+    /* ==========================================================================
+       PAW PATROL THEME AUDIO SYNTHESIZER (Web Audio API)
+       Ensures 100% reliable audio play without broken external URLs
+       ========================================================================== */
+    let audioCtx = null;
+    let isPlaying = false;
+    let synthTimer = null;
+
+    // PAW Patrol Theme Tone Sequence (Note, Duration in sec)
+    const melody = [
+      { note: 523.25, duration: 0.25 }, // C5
+      { note: 659.25, duration: 0.25 }, // E5
+      { note: 783.99, duration: 0.25 }, // G5
+      { note: 1046.50, duration: 0.4 }, // C6
+      { note: 783.99, duration: 0.2 },  // G5
+      { note: 880.00, duration: 0.3 },  // A5
+      { note: 1046.50, duration: 0.5 }, // C6
+      
+      { note: 0, duration: 0.2 },       // Rest
+      
+      { note: 659.25, duration: 0.25 }, // E5
+      { note: 783.99, duration: 0.25 }, // G5
+      { note: 880.00, duration: 0.25 }, // A5
+      { note: 783.99, duration: 0.4 },  // G5
+      { note: 659.25, duration: 0.3 },  // E5
+      { note: 523.25, duration: 0.6 },  // C5
+
+      { note: 0, duration: 0.3 }        // Rest
+    ];
+
+    function playNote(freq, duration) {
+      if (!audioCtx || freq === 0) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.log("Audio play error", e);
+      }
+    }
+
+    function startSynthLoop() {
+      if (!isPlaying) return;
+      let noteIndex = 0;
+
+      function step() {
+        if (!isPlaying) return;
+        const item = melody[noteIndex];
+        if (item.note > 0) {
+          playNote(item.note, item.duration);
+        }
+        noteIndex = (noteIndex + 1) % melody.length;
+        synthTimer = setTimeout(step, item.duration * 1000 + 50);
+      }
+      step();
+    }
+
+    function toggleMusic() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const icon = document.getElementById('musicIcon');
+      if (isPlaying) {
+        isPlaying = false;
+        clearTimeout(synthTimer);
+        icon.className = "fas fa-music text-xl";
+      } else {
+        isPlaying = true;
+        startSynthLoop();
+        icon.className = "fas fa-pause text-xl";
+      }
+    }
+
+    /* ==========================================================================
+       PIN INPUT & NAVIGATION
+       ========================================================================== */
+    const pinInputs = document.querySelectorAll('.pin-digit');
+    pinInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        if (e.target.value.length === 1 && index < pinInputs.length - 1) {
+          pinInputs[index + 1].focus();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && index > 0 && !e.target.value) {
+          pinInputs[index - 1].focus();
+        }
+        if (e.key === 'Enter') {
+          verifyPin();
+        }
+      });
+    });
+
+    function nextSlide(slideNumber) {
+      document.querySelectorAll('main > div').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById('slide' + slideNumber);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('slide-enter');
+      }
+    }
+
+    function verifyPin() {
+      let pin = "";
+      pinInputs.forEach(input => pin += input.value);
+
+      if (pin === "0701") {
+        document.getElementById('pinError').classList.add('hidden');
+        if (!isPlaying) toggleMusic(); // Start melody on user action
+        nextSlide(2);
+      } else {
+        document.getElementById('pinError').classList.remove('hidden');
+        const card = document.getElementById('slide1');
+        card.classList.add('animate-bounce');
+        setTimeout(() => card.classList.remove('animate-bounce'), 500);
+      }
+    }
+
+    // Slide 2: Nickname Verification ("")
+    document.getElementById('nicknameInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') verifyNickname();
+    });
+
+    function verifyNickname() {
+      const input = document.getElementById('nicknameInput').value.trim().toLowerCase();
+      if (input === "bayiii") {
+        document.getElementById('nicknameError').classList.add('hidden');
+        nextSlide(3);
+      } else {
+        document.getElementById('nicknameError').classList.remove('hidden');
+      }
+    }
+
+    function triggerCalendarConfetti() {
+      triggerConfetti();
+    }
+
+    /* ==========================================================================
+       HARDCORE 10x10 PAW PATROL TTS ENGINE
+       ========================================================================== */
+    /*
+      Grid 10x10 Layout:
+      Word 1 (Across): TRACKER (Row 1, Col 1 to 7)
+      Word 2 (Down): EVEREST (Row 1 to 7, Col 6) -> Intersects TRACKER at Col 6 'E'
+      Word 3 (Across): MIGHTY (Row 3, Col 3 to 8)
+      Word 4 (Down): LIBERTY (Row 3 to 9, Col 8) -> Intersects MIGHTY at Col 8 'Y'
+      Word 5 (Across): HUMDINGER (Row 7, Col 1 to 9) -> Intersects EVEREST at Col 6 'E'
+      Word 6 (Across): CHICKALETTA (Row 9, Col 0 to 10 - length 11 adjusted to fit Row 9 Col 0-10 or 10 width grid)
+      Word 7 (Down): APOLLO (Row 5 to 10, Col 4) -> Intersects HUMDINGER at Col 4 'O'
+    */
+
+    const GRID_SIZE = 10;
+    
+    // Correct solution layout map
+    // Format: [row, col, char, numberClue]
+    const solutionMap = {};
+    
+    // 1. Across: TRACKER (Row 1, Col 1..7)
+    const w1 = "TRACKER";
+    for(let i=0; i<w1.length; i++) {
+      solutionMap[`1,${1+i}`] = { char: w1[i], num: i===0 ? 1 : null };
+    }
+
+    // 2. Down: EVEREST (Row 1..7, Col 6) -> Intersects TRACKER 'E' at 1,6
+    const w2 = "EVEREST";
+    for(let i=0; i<w2.length; i++) {
+      const key = `${1+i},6`;
+      const num = i===0 ? 2 : (solutionMap[key]?.num || null);
+      solutionMap[key] = { char: w2[i], num: num };
+    }
+
+    // 3. Across: MIGHTY (Row 3, Col 3..8)
+    const w3 = "MIGHTY";
+    for(let i=0; i<w3.length; i++) {
+      const key = `3,${3+i}`;
+      solutionMap[key] = { char: w3[i], num: i===0 ? 3 : null };
+    }
+
+    // 4. Down: LIBERTY (Row 3..9, Col 8) -> Intersects MIGHTY 'Y' at 3,8
+    const w4 = "LIBERTY";
+    for(let i=0; i<w4.length; i++) {
+      const key = `${3+i},8`;
+      const num = i===0 ? 4 : (solutionMap[key]?.num || null);
+      solutionMap[key] = { char: w4[i], num: num };
+    }
+
+    // 5. Across: HUMDINGER (Row 7, Col 1..9) -> Intersects EVEREST 'E' at 7,6
+    const w5 = "HUMDINGER";
+    for(let i=0; i<w5.length; i++) {
+      const key = `7,${1+i}`;
+      const num = i===0 ? 5 : (solutionMap[key]?.num || null);
+      solutionMap[key] = { char: w5[i], num: num };
+    }
+
+    // 6. Across: CHICKALETTA (Row 9, Col 0..9 -> 10 chars)
+    const w6 = "CHICKALETT"; // Fitted 10 chars to grid width
+    for(let i=0; i<w6.length; i++) {
+      const key = `9,${0+i}`;
+      const num = i===0 ? 6 : (solutionMap[key]?.num || null);
+      solutionMap[key] = { char: w6[i], num: num };
+    }
+
+    // 7. Down: APOLLO (Row 5..10, Col 4) -> Intersects HUMDINGER 'O' at 7,4
+    const w7 = "APOLLO";
+    for(let i=0; i<w7.length; i++) {
+      const key = `${5+i},4`;
+      const num = i===0 ? 7 : (solutionMap[key]?.num || null);
+      solutionMap[key] = { char: w7[i], num: num };
+    }ssss
+
+    function buildTTSGrid() {
+      const container = document.getElementById('ttsGridContainer');
+      container.innerHTML = '';
+
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const key = `${r},${c}`;
+          const cellData = solutionMap[key];
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'tts-cell-wrapper';
+
+          if (cellData) {
+            if (cellData.num) {
+              const numSpan = document.createElement('span');
+              numSpan.className = 'tts-number';
+              numSpan.innerText = cellData.num;
+              wrapper.appendChild(numSpan);
+            }
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 1;
+            input.dataset.row = r;
+            input.dataset.col = c;
+            input.className = 'tts-input';
+
+            // Auto advance & arrow navigation
+            input.addEventListener('input', (e) => {
+              const val = e.target.value.toUpperCase();
+              e.target.value = val;
+              e.target.classList.remove('correct', 'incorrect');
+
+              if (val) {
+                // Focus next input right or down
+                const nextCol = document.querySelector(`.tts-input[data-row="${r}"][data-col="${c + 1}"]`);
+                const nextRow = document.querySelector(`.tts-input[data-row="${r + 1}"][data-col="${c}"]`);
+                if (nextCol) nextCol.focus();
+                else if (nextRow) nextRow.focus();
+              }
+            });
+
+            input.addEventListener('keydown', (e) => {
+              if (e.key === 'Backspace' && !e.target.value) {
+                const prevCol = document.querySelector(`.tts-input[data-row="${r}"][data-col="${c - 1}"]`);
+                const prevRow = document.querySelector(`.tts-input[data-row="${r - 1}"][data-col="${c}"]`);
+                if (prevCol) prevCol.focus();
+                else if (prevRow) prevRow.focus();
+              }
+            });
+
+            wrapper.appendChild(input);
+          } else {
+            const block = document.createElement('div');
+            block.className = 'tts-block';
+            wrapper.appendChild(block);
+          }
+
+          container.appendChild(wrapper);
+        }
+      }
+    }
+
+    function checkTTS() {
+      const inputs = document.querySelectorAll('.tts-input');
+      let totalCells = inputs.length;
+      let correctCells = 0;
+      let allFilled = true;
+
+      inputs.forEach(input => {
+        const r = input.dataset.row;
+        const c = input.dataset.col;
+        const val = input.value.trim().toUpperCase();
+        const expected = solutionMap[`${r},${c}`].char;
+
+        if (!val) {
+          allFilled = false;
+          input.classList.remove('correct', 'incorrect');
+        } else if (val === expected) {
+          correctCells++;
+          input.classList.add('correct');
+          input.classList.remove('incorrect');
+        } else {
+          input.classList.add('incorrect');
+          input.classList.remove('correct');
+        }
+      });
+
+      const statusEl = document.getElementById('ttsStatus');
+
+      if (correctCells === totalCells) {
+        statusEl.className = "text-xs font-bold text-green-600 mb-3";
+        statusEl.innerText = "Luar Biasa! Semua Jawaban TTS Benar 100%! 🎉";
+        
+        setTimeout(() => {
+          document.querySelectorAll('main > div').forEach(el => el.classList.add('hidden'));
+          const victory = document.getElementById('slideVictory');
+          victory.classList.remove('hidden');
+          victory.classList.add('slide-enter');
+          triggerConfetti();
+        }, 800);
+      } else {
+        statusEl.className = "text-xs font-bold text-red-500 mb-3 animate-pulse";
+        if (!allFilled) {
+          statusEl.innerText = `Masih ada kotak kosong! (${correctCells}/${totalCells} benar)`;
+        } else {
+          statusEl.innerText = `Ada jawaban yang masih salah! Periksa kotak warna merah. (${correctCells}/${totalCells} benar)`;
+        }
+      }
+    }
+
+    function resetTTS() {
+      const inputs = document.querySelectorAll('.tts-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('correct', 'incorrect');
+      });
+      const statusEl = document.getElementById('ttsStatus');
+      statusEl.className = "text-xs font-bold text-blue-900 mb-3";
+      statusEl.innerText = "Isi semua kotak dengan jawaban yang benar!";
+    }
+
+    // Confetti Cannon
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 150,
+          spread: 90,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    // Initialize TTS Grid on load
+    window.onload = function() {
+      buildTTSGrid();
+    };
+  </script>
+</body>
+</html>
